@@ -1,12 +1,15 @@
-"{ Builtin options and settings
-" activate matchit plugin
+"{ Builtin optional plugins
+" Activate matchit plugin
 runtime! macros/matchit.vim
 
 " Activate man page plugin
 runtime! ftplugin/man.vim
+"}
 
+"{ Builtin options and settings
 if !has('nvim')
-    " Cursor shapes
+    " Change cursor shapes based on whether we are in insert mode,
+    " see https://vi.stackexchange.com/questions/9131/i-cant-switch-to-cursor-in-insert-mode
     let &t_SI = "\<esc>[6 q"
     let &t_EI = "\<esc>[2 q"
     if exists("&t_SR")
@@ -107,7 +110,6 @@ endif
 " Ignore certain files and folders when globbing
 set wildignore+=*.o,*.obj,*.bin,*.dll,*.exe
 set wildignore+=*/.git/*,*/.svn/*,*/__pycache__/*,*/build/**
-set wildignore+=*.jpg,*.png,*.jpeg,*.gif,*.bmp,*.tiff
 set wildignore+=*.pyc
 set wildignore+=*.DS_Store
 set wildignore+=*.aux,*.bbl,*.blg,*.brf,*.fls,*.fdb_latexmk,*.synctex.gz,*.pdf
@@ -135,7 +137,10 @@ set autowrite
 " http://tinyurl.com/l9nuj4a. The function to get lastmod time is drawn from
 " http://tinyurl.com/yxd23vo8
 set title
-set titlestring=%{hostname()}\ \ %{expand('%:p')}\ \ %{strftime('%Y-%m-%d\ %H:%M',getftime(expand('%')))}
+set titlestring=
+set titlestring+=%(%{hostname()}\ \ %)
+set titlestring+=%(%{expand('%:p')}\ \ %)
+set titlestring+=%{strftime('%Y-%m-%d\ %H:%M',getftime(expand('%')))}
 
 " Persistent undo even after you close a file and re-open it.
 " For vim, we need to set up an undodir so that $HOME is not cluttered with
@@ -182,7 +187,7 @@ set tildeop
 set nojoinspaces
 
 " Text after this column is not highlighted
-set synmaxcol=100
+set synmaxcol=500
 
 " Increment search
 set incsearch
@@ -445,8 +450,8 @@ nnoremap <silent> <leader>sv :silent update $MYVIMRC <bar> source $MYVIMRC <bar>
 " Reselect the text that has just been pasted
 nnoremap <leader>v `[V`]
 
-" Use sane regex expression (see `:h magic` for more info)
-nnoremap / /\v
+" Search in selected region
+vnoremap / :<C-U>call feedkeys('/\%>'.(line("'<")-1).'l\%<'.(line("'>")+1)."l")<CR>
 
 " Find and replace (like Sublime Text 3)
 nnoremap <C-H> :%s/
@@ -656,7 +661,7 @@ set statusline+=%{&bomb?'[BOM]':''}
 
 set statusline+=%1*
 " Location of cursor line
-set statusline+=[%l/%L\ %2p%%]
+set statusline+=[%l/%L]
 
 " Column number
 set statusline+=\ col:%3c
